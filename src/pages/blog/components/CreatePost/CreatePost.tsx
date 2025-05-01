@@ -21,7 +21,7 @@ export default function CreatePost() {
     event.preventDefault()
     const formDataWithId = { ...formData, id: new Date().toISOString() }
     dispatch(addPost(formDataWithId))
-    console.log(formData)
+    setFormData(initialState) // clear form
   }
   // khi nhấn submit khi dispatch 1 cái action tên là addPost
   // khi dispatch action thì reducer kiểm tra thấy có action dispatch rồi
