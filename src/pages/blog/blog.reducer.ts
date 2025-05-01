@@ -1,4 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
+import { initialPostList } from 'constants/blog'
 import { Post } from 'types/blog.type'
 // createReducer : nó nhận tham số đầu tiên là initial State
 // cái thứ 2 là 1 cái builder callback
@@ -8,7 +9,7 @@ interface BlogSate {
 }
 
 const initialState = {
-  postList: []
+  postList: initialPostList
 }
 
 // cái builder callBack là nơi mà chúng ta  sẽ xử lí những cái action

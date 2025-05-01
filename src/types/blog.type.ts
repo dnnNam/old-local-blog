@@ -5,6 +5,6 @@ export interface Post {
   description: string //mô tả ngắn gọn bài viết
   publishDate: string // ngày đăng bài
   id: string // mã định danh duy nhất
-  featureImage: string // đường dẫn ảnh đại diện cho bài viết
+  featuredImage: string // đường dẫn ảnh đại diện cho bài viết
   published: boolean // trạng thái bài viết true là xuất bản , false là bản nháp
 }
