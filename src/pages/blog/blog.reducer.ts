@@ -23,6 +23,7 @@ export const addPost = createAction<Post>('blog/addPost')
 export const detelePost = createAction<String>('blog/detelePost')
 // chức năng update
 export const startEditingPost = createAction<string>('blog/startEditingPost')
+export const finishEditingPost = createAction<Post>('blog/finishEditingPost')
 // xử lí button cancel
 export const cancelEditingPost = createAction('blog/ cancelEditingPost')
 // cái builder callBack là nơi mà chúng ta  sẽ xử lí những cái action
@@ -49,6 +50,17 @@ const blogReducer = createReducer(initialState, (builder) => {
       state.editingPost = foundPost
     })
     .addCase(cancelEditingPost, (state) => {
+      state.editingPost = null
+    })
+    .addCase(finishEditingPost, (state, action) => {
+      const postId = action.payload.id
+      state.postList.some((post, index) => {
+        if (post.id === postId) {
+          state.postList[index] = action.payload
+          return true
+        }
+        return false
+      })
       state.editingPost = null
     })
 })

@@ -1,4 +1,4 @@
-import { addPost, cancelEditingPost } from 'pages/blog/blog.reducer'
+import { addPost, cancelEditingPost, finishEditingPost } from 'pages/blog/blog.reducer'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'store'
@@ -27,14 +27,21 @@ export default function CreatePost() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const formDataWithId = { ...formData, id: new Date().toISOString() }
-    dispatch(addPost(formDataWithId))
+
+    if (editingPost) {
+      dispatch(finishEditingPost(formData))
+    } else {
+      const formDataWithId = { ...formData, id: new Date().toISOString() }
+      dispatch(addPost(formDataWithId))
+    }
+
     setFormData(initialState) // clear form
   }
 
   const handleCancelEditingPost = () => {
     dispatch(cancelEditingPost())
   }
+
   // khi nhấn submit khi dispatch 1 cái action tên là addPost
   // khi dispatch action thì reducer kiểm tra thấy có action dispatch rồi
   // builder thực hiện và cập nhập lại state
