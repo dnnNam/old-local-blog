@@ -1,4 +1,4 @@
-import { createAction, createReducer } from '@reduxjs/toolkit'
+import { createAction, createReducer, current } from '@reduxjs/toolkit'
 import { initialPostList } from 'constants/blog'
 import { Post } from 'types/blog.type'
 // createReducer : nó nhận tham số đầu tiên là initial State
@@ -63,6 +63,18 @@ const blogReducer = createReducer(initialState, (builder) => {
       })
       state.editingPost = null
     })
+    .addMatcher(
+      (action) => action.type.includes('cancel'),
+      (state, action) => {
+        console.log(current(state))
+      }
+    )
 })
 
 export default blogReducer
+
+// ngoài những addCase ra còn cách dùng như
+// addMatcher cho phép chúng ta truyền vào addMatcher function
+// khi mà addMatcher return true thì chạy cái callback
+// chuyên xử lí những cái state động
+// ngoài ra còn có addDefaultCase khi không nhảy case thì nó nhảy vào defaultCase
