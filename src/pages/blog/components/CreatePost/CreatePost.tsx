@@ -1,4 +1,4 @@
-import { addPost } from 'pages/blog/blog.reducer'
+import { addPost, cancelEditingPost } from 'pages/blog/blog.reducer'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'store'
@@ -31,11 +31,15 @@ export default function CreatePost() {
     dispatch(addPost(formDataWithId))
     setFormData(initialState) // clear form
   }
+
+  const handleCancelEditingPost = () => {
+    dispatch(cancelEditingPost())
+  }
   // khi nhấn submit khi dispatch 1 cái action tên là addPost
   // khi dispatch action thì reducer kiểm tra thấy có action dispatch rồi
   // builder thực hiện và cập nhập lại state
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} onReset={handleCancelEditingPost}>
       <div className='mb-6'>
         <label htmlFor='title' className='mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300'>
           Title
