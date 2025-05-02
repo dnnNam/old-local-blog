@@ -31,7 +31,7 @@ export default function CreatePost() {
     if (editingPost) {
       dispatch(finishEditingPost(formData))
     } else {
-      const formDataWithId = { ...formData, id: new Date().toISOString() }
+      const formDataWithId = { ...formData }
       dispatch(addPost(formDataWithId))
     }
 

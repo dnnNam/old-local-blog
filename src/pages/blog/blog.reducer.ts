@@ -1,4 +1,4 @@
-import { createAction, createReducer, current } from '@reduxjs/toolkit'
+import { createAction, createReducer, current, nanoid } from '@reduxjs/toolkit'
 import { initialPostList } from 'constants/blog'
 import { Post } from 'types/blog.type'
 // createReducer : nó nhận tham số đầu tiên là initial State
@@ -17,7 +17,16 @@ const initialState: BlogSate = {
 // createAction là một helper function dùng để tạo một Redux Action
 // function createAction (type , prepareAction?)
 // mỗi cái action đều phải có 1 cái type
-export const addPost = createAction<Post>('blog/addPost')
+
+// đề mô prepare callback cho 1 bài blog có id là nanoid
+export const addPost = createAction('blog/addPost', function (post: Omit<Post, 'id'>) {
+  return {
+    payload: {
+      ...post,
+      id: nanoid()
+    }
+  }
+})
 
 // chức năng xóa tìm ra index và dùng splice để xóa
 export const detelePost = createAction<String>('blog/detelePost')
@@ -71,8 +80,12 @@ const blogReducer = createReducer(initialState, (builder) => {
     )
 })
 
-export default blogReducer
+// ngoài cách dùng builder callBack còn có mapObject nhưng nó không ổn định với typeScript
+// vì khi dùng mapObject sẽ mất định nghĩa chuyển thành any phải định nghĩa lại
 
+export default blogReducer
+// nếu như log state trong reducer thì sẽ in ra proxy khó đọc (đó là draft state  trong immerjs)
+// muốn xem state thì phải dùng thêm thằng current để in ra
 // ngoài những addCase ra còn cách dùng như
 // addMatcher cho phép chúng ta truyền vào addMatcher function
 // khi mà addMatcher return true thì chạy cái callback
