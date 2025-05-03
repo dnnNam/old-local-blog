@@ -84,12 +84,16 @@ const blogSlice = createSlice({
   },
 
   extraReducers(builder) {
-    builder.addMatcher(
-      (action) => action.type.includes('cancel'),
-      (state, action) => {
-        console.log(current(state))
-      }
-    )
+    builder
+      .addMatcher(
+        (action) => action.type.includes('cancel'),
+        (state, action) => {
+          console.log(current(state))
+        }
+      )
+      .addDefaultCase((state, action) => {
+        console.log(`action type: ${action.type}`, current(state))
+      })
   }
 })
 
