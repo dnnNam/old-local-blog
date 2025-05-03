@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import blogReducer from 'pages/blog/blog.reducer'
+import blogReducer from 'pages/blog/blog.slice'
 // store là một object chứa state tree . Chỉ nên có duy nhất 1 store trong app
 // store sẽ chạy rootReducer bất cứ khi nào một action được dispatch
 // dispatch : là một function dùng để gửi một action đi đến store (hay còn gọi là reducer cũng được)
