@@ -2,11 +2,25 @@ import { useDispatch, useSelector } from 'react-redux'
 import PostItem from '../PostItem'
 import { RootState } from 'store'
 import { detelePost, startEditingPost } from 'pages/blog/blog.reducer'
+import { useEffect } from 'react'
+import http from 'utils/http'
 
+// gọi API trong useEffect()
+// Nếu gọi thành công thì dispactch cái action type: "blog/getPostListSuccess"
+// nếu gọi thất bại dispatch 1 action type: "blog/getPostListFailed"
+// không được xử lí bất đồng bộ trong thằng reducers
+// nên chúng ta mới xử lý bất đồng bộ trong cái component của chúng ta
 export default function PostList() {
   // làm cách nào lấy 1 cái state trong redux ta sử dụng 1 hook useSelector
   const postList = useSelector((state: RootState) => state.blog.postList)
   const dispatch = useDispatch()
+  // get api
+  useEffect(() => {
+    http.get('posts').then((res) => {
+      console.log(res.data)
+    })
+  }, [])
+
   const handleDelete = (postId: string) => {
     dispatch(detelePost(postId))
   }
