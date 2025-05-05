@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import PostItem from '../PostItem'
-import { RootState } from 'store'
-import { detelePost, startEditingPost } from 'pages/blog/blog.slice'
+import { RootState, useAppDispatch } from 'store'
+import { detelePost, getPostList, startEditingPost } from 'pages/blog/blog.slice'
 import { useEffect } from 'react'
 import http from 'utils/http'
 import { error } from 'console'
@@ -15,34 +15,12 @@ import { error } from 'console'
 export default function PostList() {
   // làm cách nào lấy 1 cái state trong redux ta sử dụng 1 hook useSelector
   const postList = useSelector((state: RootState) => state.blog.postList)
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   // get api
   useEffect(() => {
-    const controller = new AbortController()
-    http
-      .get('posts', {
-        signal: controller.signal
-      })
-      .then((res) => {
-        console.log(res)
-        const postsListResult = res.data
-        dispatch({
-          type: 'blog/getPostListSuccess',
-          payload: postsListResult
-        })
-      })
-      .catch((error) => {
-        // mục đích thêm if khi abort không muốn dispatch thằng failed
-        if (!(error.code === 'ERR_CANCELED')) {
-          dispatch({
-            type: 'blog/getPostListFailed',
-            payload: error
-          })
-        }
-      })
+    const promise = dispatch(getPostList())
     return () => {
-      // xử lí controller.abort
-      controller.abort()
+      promise.abort()
     }
   }, [dispatch])
 
