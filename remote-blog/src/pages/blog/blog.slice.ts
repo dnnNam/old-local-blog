@@ -40,6 +40,13 @@ export const addPost = createAsyncThunk('blog/addPost', async (body: Omit<Post, 
   return response.data
 })
 
+export const updatePost = createAsyncThunk('blog/updatePost', async (body: Post, thunkAPI) => {
+  const response = await http.post<Post>('posts', body, {
+    signal: thunkAPI.signal // abort cái request
+  })
+  return response.data
+})
+
 const blogSlice = createSlice({
   name: 'blog',
   initialState: initialState,
@@ -79,6 +86,9 @@ const blogSlice = createSlice({
         state.postList = action.payload
       })
       .addCase(addPost.fulfilled, (state, action) => {
+        state.postList.push(action.payload)
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
         state.postList.push(action.payload)
       })
       .addMatcher(
