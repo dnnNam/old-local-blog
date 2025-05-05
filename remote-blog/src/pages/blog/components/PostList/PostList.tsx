@@ -1,25 +1,50 @@
 import { useDispatch, useSelector } from 'react-redux'
 import PostItem from '../PostItem'
 import { RootState } from 'store'
-import { detelePost, startEditingPost } from 'pages/blog/blog.reducer'
+import { detelePost, startEditingPost } from 'pages/blog/blog.slice'
 import { useEffect } from 'react'
 import http from 'utils/http'
+import { error } from 'console'
 
 // gọi API trong useEffect()
 // Nếu gọi thành công thì dispactch cái action type: "blog/getPostListSuccess"
 // nếu gọi thất bại dispatch 1 action type: "blog/getPostListFailed"
 // không được xử lí bất đồng bộ trong thằng reducers
 // nên chúng ta mới xử lý bất đồng bộ trong cái component của chúng ta
+// để không muốn gọi lại 2 lần của chế đô useStrict mode ta 1 dùng 1 loại đó là abort controller thư viện của axios
 export default function PostList() {
   // làm cách nào lấy 1 cái state trong redux ta sử dụng 1 hook useSelector
   const postList = useSelector((state: RootState) => state.blog.postList)
   const dispatch = useDispatch()
   // get api
   useEffect(() => {
-    http.get('posts').then((res) => {
-      console.log(res.data)
-    })
-  }, [])
+    const controller = new AbortController()
+    http
+      .get('posts', {
+        signal: controller.signal
+      })
+      .then((res) => {
+        console.log(res)
+        const postsListResult = res.data
+        dispatch({
+          type: 'blog/getPostListSuccess',
+          payload: postsListResult
+        })
+      })
+      .catch((error) => {
+        // mục đích thêm if khi abort không muốn dispatch thằng failed
+        if (!(error.code === 'ERR_CANCELED')) {
+          dispatch({
+            type: 'blog/getPostListFailed',
+            payload: error
+          })
+        }
+      })
+    return () => {
+      // xử lí controller.abort
+      controller.abort()
+    }
+  }, [dispatch])
 
   const handleDelete = (postId: string) => {
     dispatch(detelePost(postId))
