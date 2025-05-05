@@ -40,12 +40,15 @@ export const addPost = createAsyncThunk('blog/addPost', async (body: Omit<Post, 
   return response.data
 })
 
-export const updatePost = createAsyncThunk('blog/updatePost', async (body: Post, thunkAPI) => {
-  const response = await http.post<Post>('posts', body, {
-    signal: thunkAPI.signal // abort cái request
-  })
-  return response.data
-})
+export const updatePost = createAsyncThunk(
+  'blog/updatePost',
+  async ({ postId, body }: { postId: string; body: Post }, thunkAPI) => {
+    const response = await http.put<Post>(`posts/${postId}`, body, {
+      signal: thunkAPI.signal // abort cái request
+    })
+    return response.data
+  }
+)
 
 const blogSlice = createSlice({
   name: 'blog',
@@ -89,7 +92,14 @@ const blogSlice = createSlice({
         state.postList.push(action.payload)
       })
       .addCase(updatePost.fulfilled, (state, action) => {
-        state.postList.push(action.payload)
+        state.postList.find((post, index) => {
+          if (post.id === action.payload.id) {
+            state.postList[index] = action.payload
+            return true
+          }
+          return false
+        })
+        state.editingPost = null
       })
       .addMatcher(
         (action) => action.type.includes('cancel'),

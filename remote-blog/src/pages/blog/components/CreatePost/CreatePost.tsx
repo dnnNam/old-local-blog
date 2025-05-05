@@ -1,4 +1,4 @@
-import { addPost, cancelEditingPost, finishEditingPost } from 'pages/blog/blog.slice'
+import { addPost, cancelEditingPost, finishEditingPost, updatePost } from 'pages/blog/blog.slice'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, useAppDispatch } from 'store'
@@ -29,7 +29,7 @@ export default function CreatePost() {
     event.preventDefault()
 
     if (editingPost) {
-      dispatch(finishEditingPost(formData))
+      dispatch(updatePost({ postId: editingPost.id, body: formData }))
     } else {
       dispatch(addPost(formData))
     }
