@@ -1,17 +1,24 @@
-import { createAsyncThunk, createSlice, current, PayloadAction } from '@reduxjs/toolkit'
+import { AsyncThunk, createAsyncThunk, createSlice, current, PayloadAction } from '@reduxjs/toolkit'
 import { Post } from 'types/blog.type'
 import http from 'utils/http'
 // createReducer : nó nhận tham số đầu tiên là initial State
 // cái thứ 2 là 1 cái builder callback
 
+type GenericAsyncThunk = AsyncThunk<unknown, unknown, any>
+
+type PendingAction = ReturnType<GenericAsyncThunk['pending']>
+type RejectedAction = ReturnType<GenericAsyncThunk['rejected']>
+type FulfilledAction = ReturnType<GenericAsyncThunk['fulfilled']>
 interface BlogSate {
   postList: Post[]
   editingPost: Post | null
+  loading: boolean
 }
 
 const initialState: BlogSate = {
   postList: [],
-  editingPost: null
+  editingPost: null,
+  loading: false
 }
 
 // khi dùng createAsyncThunk nên dùng ở extraReducer
@@ -85,10 +92,22 @@ const blogSlice = createSlice({
         const deletePostIndex = state.postList.findIndex((post) => post.id === postId)
         if (deletePostIndex !== -1) state.postList.splice(deletePostIndex, 1)
       })
-      .addMatcher(
-        (action) => action.type.includes('cancel'),
+      .addMatcher<PendingAction>(
+        (action) => action.type.endsWith('/pending'),
         (state, action) => {
-          console.log(current(state))
+          state.loading = true
+        }
+      )
+      .addMatcher<RejectedAction>(
+        (action) => action.type.endsWith('/rejected'),
+        (state, action) => {
+          state.loading = false
+        }
+      )
+      .addMatcher<FulfilledAction>(
+        (action) => action.type.endsWith('/fulfilled'),
+        (state, action) => {
+          state.loading = false
         }
       )
       .addDefaultCase((state, action) => {

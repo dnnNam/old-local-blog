@@ -1,6 +1,6 @@
 import { addPost, cancelEditingPost, updatePost } from 'pages/blog/blog.slice'
 import React, { Fragment, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState, useAppDispatch } from 'store'
 import { Post } from 'types/blog.type'
 
@@ -17,6 +17,7 @@ export default function CreatePost() {
   // mình nên tạo 1 cái state tại state này chỉ dùng trong component này nên không bỏ vào redux
   const [formData, setFormData] = useState<Post>(initialState)
   const editingPost = useSelector((state: RootState) => state.blog.editingPost)
+  const loading = useSelector((state: RootState) => state.blog.loading)
   // nếu đưa id vào redux ta dùng dispatch
   const dispatch = useAppDispatch()
 
