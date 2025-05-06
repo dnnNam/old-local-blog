@@ -13,12 +13,14 @@ interface BlogSate {
   postList: Post[]
   editingPost: Post | null
   loading: boolean
+  currentRequestId: undefined | string
 }
 
 const initialState: BlogSate = {
   postList: [],
   editingPost: null,
-  loading: false
+  loading: false,
+  currentRequestId: undefined
 }
 
 // khi dùng createAsyncThunk nên dùng ở extraReducer
@@ -96,20 +98,19 @@ const blogSlice = createSlice({
         (action) => action.type.endsWith('/pending'),
         (state, action) => {
           state.loading = true
+          state.currentRequestId = action.meta.requestId
         }
       )
-      .addMatcher<RejectedAction>(
-        (action) => action.type.endsWith('/rejected'),
+      .addMatcher<RejectedAction | FulfilledAction>(
+        (action) => action.type.endsWith('/rejected') || action.type.endsWith('/fulfilled'),
         (state, action) => {
-          state.loading = false
+          if (state.loading && state.currentRequestId === action.meta.requestId) {
+            state.loading = false
+            state.currentRequestId = undefined
+          }
         }
       )
-      .addMatcher<FulfilledAction>(
-        (action) => action.type.endsWith('/fulfilled'),
-        (state, action) => {
-          state.loading = false
-        }
-      )
+
       .addDefaultCase((state, action) => {
         console.log(`action type: ${action.type}`, current(state))
       })
