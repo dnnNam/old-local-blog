@@ -110,6 +110,23 @@ const blogSlice = createSlice({
           }
         }
       )
+      // Khi bạn dùng createAsyncThunk, Redux Toolkit sẽ tự động gắn thêm một requestId cho mỗi lần gọi async
+      // Khi bạn chỉ dùng state.loading = true ở /pending và state.loading = false ở /fulfilled hoặc /rejected mà không kiểm tra requestId, thì xảy ra tình huống như sau:
+
+      // Người dùng bấm 2 lần liên tục
+      // Request 1 (id = abc123) gọi loading = true.
+
+      // Request 2 (id = xyz456) cũng gọi loading = true.
+
+      // Nhưng request 1 trả về trước → loading = false (vì không kiểm tra gì cả).
+
+      // Mặc dù request 2 vẫn đang chạy → loading bị tắt sớm.
+
+      // Kết quả:
+
+      // Skeleton vừa set true thì lại bị set false ngay sau đó.
+
+      // UI không kịp hiển thị skeleton → giống như không loading.
 
       .addDefaultCase((state, action) => {
         console.log(`action type: ${action.type}`, current(state))
