@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import PostItem from '../PostItem'
 import { RootState, useAppDispatch } from 'store'
-import { detelePost, getPostList, startEditingPost } from 'pages/blog/blog.slice'
+import { deletePost, getPostList, startEditingPost } from 'pages/blog/blog.slice'
 import { useEffect } from 'react'
 import http from 'utils/http'
 import { error } from 'console'
@@ -25,7 +25,7 @@ export default function PostList() {
   }, [dispatch])
 
   const handleDelete = (postId: string) => {
-    dispatch(detelePost(postId))
+    dispatch(deletePost(postId))
   }
   const handleStartEditing = (postId: string) => {
     dispatch(startEditingPost(postId))
