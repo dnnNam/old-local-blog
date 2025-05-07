@@ -1,3 +1,4 @@
+import { unwrapResult } from '@reduxjs/toolkit'
 import { error } from 'console'
 import { addPost, cancelEditingPost, updatePost } from 'pages/blog/blog.slice'
 import React, { Fragment, useEffect, useState } from 'react'
@@ -32,23 +33,27 @@ export default function CreatePost() {
     setFormData(editingPost || initialState)
   }, [editingPost])
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     // dispatch là nó đóng gói muốn lấy phải unwrap mở rồi mới chấm then
     if (editingPost) {
       dispatch(updatePost({ postId: editingPost.id, body: formData }))
         .unwrap()
-        .then((res) => {
-          console.log(res)
+        .then(() => {
+          setFormData(initialState) // clear form
+          if (errorForm) {
+            setErrorForm(null)
+          }
         })
         .catch((error) => {
           setErrorForm(error.error)
         })
     } else {
-      dispatch(addPost(formData))
-    }
+      const res = await dispatch(addPost(formData)).unwrap()
+      console.log(res)
 
-    setFormData(initialState) // clear form
+      setFormData(initialState)
+    }
   }
 
   const handleCancelEditingPost = () => {
