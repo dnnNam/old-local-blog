@@ -49,10 +49,15 @@ export default function CreatePost() {
           setErrorForm(error.error)
         })
     } else {
-      const res = await dispatch(addPost(formData)).unwrap()
-      console.log(res)
-
-      setFormData(initialState)
+      try {
+        await dispatch(addPost(formData)).unwrap()
+        setFormData(initialState)
+        if (errorForm) {
+          setErrorForm(null)
+        }
+      } catch (error: any) {
+        setErrorForm(error.error)
+      }
     }
   }
 
