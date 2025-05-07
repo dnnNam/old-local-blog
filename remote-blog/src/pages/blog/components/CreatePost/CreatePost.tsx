@@ -1,3 +1,4 @@
+import { error } from 'console'
 import { addPost, cancelEditingPost, updatePost } from 'pages/blog/blog.slice'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -28,9 +29,16 @@ export default function CreatePost() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
+    // dispatch là nó đóng gói muốn lấy phải unwrap mở rồi mới chấm then
     if (editingPost) {
       dispatch(updatePost({ postId: editingPost.id, body: formData }))
+        .unwrap()
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     } else {
       dispatch(addPost(formData))
     }
