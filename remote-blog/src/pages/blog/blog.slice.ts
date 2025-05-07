@@ -42,10 +42,17 @@ export const addPost = createAsyncThunk('blog/addPost', async (body: Omit<Post, 
 export const updatePost = createAsyncThunk(
   'blog/updatePost',
   async ({ postId, body }: { postId: string; body: Post }, thunkAPI) => {
-    const response = await http.put<Post>(`posts/${postId}`, body, {
-      signal: thunkAPI.signal // abort cái request
-    })
-    return response.data
+    try {
+      const response = await http.put<Post>(`posts/${postId}`, body, {
+        signal: thunkAPI.signal // abort cái request
+      })
+      return response.data
+    } catch (error: any) {
+      if (error.name === 'AxiosError' && error.response.status === 422) {
+        return thunkAPI.rejectWithValue(error.response.data)
+      }
+      throw error
+    }
   }
 )
 
@@ -129,7 +136,7 @@ const blogSlice = createSlice({
       // UI không kịp hiển thị skeleton → giống như không loading.
 
       .addDefaultCase((state, action) => {
-        console.log(`action type: ${action.type}`, current(state))
+        // console.log(`action type: ${action.type}`, current(state))
       })
   }
 })
