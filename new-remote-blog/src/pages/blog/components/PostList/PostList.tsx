@@ -1,9 +1,12 @@
 import { useGetPostsQuery } from 'pages/blog/blog.service'
 import PostItem from '../PostItem'
+import { Fragment } from 'react'
+import SkeletonPost from '../SkeletonPost'
 
 export default function PostList() {
   // isLoading chỉ dành cho lần fetch đầu tiên
   // isFetch là cho mỗi lần gọi API
+  // nếu thành công thì nó sẽ là false còn nếu true là chưa thành công
 
   const { data, isLoading, isFetching } = useGetPostsQuery()
   console.log(data, isLoading, isFetching)
@@ -18,10 +21,13 @@ export default function PostList() {
           </p>
         </div>
         <div className='grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-2 xl:gap-8'>
-          <PostItem />
-          <PostItem />
-          <PostItem />
-          <PostItem />
+          {isFetching && (
+            <Fragment>
+              <SkeletonPost />
+              <SkeletonPost />
+            </Fragment>
+          )}
+          {!isFetching && data?.map((post) => <PostItem key={post.id} post={post} />)}
         </div>
       </div>
     </div>
