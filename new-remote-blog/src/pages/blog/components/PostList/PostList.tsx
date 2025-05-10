@@ -9,7 +9,7 @@ export default function PostList() {
   // nếu thành công thì nó sẽ là false còn nếu true là chưa thành công
 
   const { data, isLoading, isFetching } = useGetPostsQuery()
-  console.log(data, isLoading, isFetching)
+  // console.log(data, isLoading, isFetching)
 
   return (
     <div className='bg-white py-6 sm:py-8 lg:py-12'>
