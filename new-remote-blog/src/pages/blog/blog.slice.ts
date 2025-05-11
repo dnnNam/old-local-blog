@@ -22,5 +22,5 @@ const blogSlice = createSlice({
 })
 
 const blogReducer = blogSlice.reducer
-
+export const { cancelEditPost, startEditPost } = blogSlice.actions
 export default blogReducer
