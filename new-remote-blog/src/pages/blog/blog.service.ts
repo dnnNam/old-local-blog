@@ -106,7 +106,9 @@ export const blogApi = createApi({
           method: 'PUT',
           body: data.body
         }
-      }
+      },
+      invalidatesTags: (result, error, data) => [{ type: 'Posts', id: data.id }]
+      // trường hợp này biết id
     })
   })
 })
