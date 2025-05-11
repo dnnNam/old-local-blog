@@ -108,9 +108,18 @@ export const blogApi = createApi({
         }
       },
       invalidatesTags: (result, error, data) => [{ type: 'Posts', id: data.id }]
-      // trường hợp này biết id
+      // trường hợp này thì getPosts sẽ chạy lại
+    }),
+    deletePost: build.mutation<{}, string>({
+      query(id) {
+        return {
+          url: `posts/${id}`,
+          method: 'DELETE'
+        }
+      }
     })
   })
 })
 
-export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery, useUpdatePostMutation } = blogApi
+export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery, useUpdatePostMutation, useDeletePostMutation } =
+  blogApi
