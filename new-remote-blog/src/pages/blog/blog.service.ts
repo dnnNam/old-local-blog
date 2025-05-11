@@ -116,7 +116,9 @@ export const blogApi = createApi({
           url: `posts/${id}`,
           method: 'DELETE'
         }
-      }
+      },
+      // trường hợp này thì getPosts sẽ chạy lại
+      invalidatesTags: (result, error, id) => [{ type: 'Posts', id }]
     })
   })
 })
