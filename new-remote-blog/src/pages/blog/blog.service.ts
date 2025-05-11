@@ -98,8 +98,17 @@ export const blogApi = createApi({
     }),
     getPost: build.query<Post, string>({
       query: (id) => `posts/${id}`
+    }),
+    updatePost: build.mutation<Post, { id: string; body: Post }>({
+      query(data) {
+        return {
+          url: `posts/${data.id}`,
+          method: 'PUT',
+          body: data.body
+        }
+      }
     })
   })
 })
 
-export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery } = blogApi
+export const { useGetPostsQuery, useAddPostMutation, useGetPostQuery, useUpdatePostMutation } = blogApi
