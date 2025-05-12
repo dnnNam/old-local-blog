@@ -64,15 +64,20 @@ export default function CreatePost() {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
-    if (postId) {
-      await updatePost({
-        body: formData as Post,
-        id: postId
-      }).unwrap()
-    } else {
-      await addPost(formData).unwrap()
+
+    try {
+      if (postId) {
+        await updatePost({
+          body: formData as Post,
+          id: postId
+        }).unwrap()
+      } else {
+        await addPost(formData).unwrap()
+      }
+      setFormData(initialState)
+    } catch (error) {
+      console.log(error)
     }
-    setFormData(initialState)
   }
   return (
     <form onSubmit={handleSubmit}>
