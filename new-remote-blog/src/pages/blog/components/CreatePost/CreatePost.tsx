@@ -1,8 +1,9 @@
 import { useAddPostMutation, useGetPostQuery, useUpdatePostMutation } from 'pages/blog/blog.service'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from 'store'
 import { Post } from 'types/blog.type'
+import { isEntityError, isFetchBaseQueryError } from 'utils/helper'
 const initialState: Omit<Post, 'id'> = {
   description: '',
   featuredImage: '',
@@ -10,12 +11,47 @@ const initialState: Omit<Post, 'id'> = {
   published: false,
   title: ''
 }
+
+/**
+ * Mẹo copy các key của kiểu Omit<Post, 'id'> để làm key cho kiểu FormError
+ */
+
+type FormError =
+  | {
+      // cách 1
+      // [key in keyof Omit<Post, 'id'>]: string
+
+      // cách 2
+      [key in keyof typeof initialState]: string
+      // key có thể là 1 trong những cái key của initialState
+    }
+  | null
+
 export default function CreatePost() {
   const [formData, setFormData] = useState<Omit<Post, 'id'> | Post>(initialState)
   const [addPost, addPostResult] = useAddPostMutation()
   const postId = useSelector((state: RootState) => state.blog.postId)
   const { data } = useGetPostQuery(postId, { skip: !postId }) // khi bấm vài edit mới lấy
   const [updatePost, updatePostResult] = useUpdatePostMutation()
+
+  /**
+   * Lỗi có thể đến từ `addPostResult` hoặc `updatePostResult`
+   * Vậy chúng ta sẽ dựa vào điều kiện có postId hoặc không có (tức đang trong chế độ edit hay không) để show lỗi
+   *
+   * Chúng ta cũng không cần thiết phải tạo một state errorForm
+   * Vì errorForm phụ thuộc vào `addPostResult`, `updatePostResult` và `postId` nên có thể dùng một biến để tính toán
+   */
+
+  const errorForm: FormError = useMemo(() => {
+    const errorResult = postId ? updatePostResult.error : addPostResult.error
+    // Vì errorResult có thể là FetchBaseQueryError | SerializedError | undefined, mỗi kiểu lại có cấu trúc khác nhau
+    // nên chúng ta cần kiểm tra để hiển thị cho đúng
+    if (isEntityError(errorResult)) {
+      return errorResult.data.error
+    }
+    return null
+  }, [postId, updatePostResult, addPostResult])
+
   useEffect(() => {
     if (data) {
       // kiểm tra coi có bị undefined hay không
