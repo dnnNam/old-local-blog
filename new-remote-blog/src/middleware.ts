@@ -1,4 +1,4 @@
-import { isRejectedWithValue, Middleware, MiddlewareAPI } from '@reduxjs/toolkit'
+import { isRejectedWithValue, Middleware, MiddlewareAPI, isRejected } from '@reduxjs/toolkit'
 import { toast } from 'react-toastify'
 import { isEntityError } from 'utils/helper'
 function isPayloadErrorMessage(payload: unknown): payload is {
@@ -19,6 +19,12 @@ export const rtkQueryErrorLogger: Middleware = (api: MiddlewareAPI) => (next) =>
    */
   // Option: chứ trong thực tế thì không cần bắt buộc
   // lỗi từ server trả về rejected with value bằng true
+  if (isRejected(action)) {
+    if (action.error.name === 'CustomError') {
+      // Những lỗi liên quan đến quá trình thực thi
+      toast.warn(action.error.message)
+    }
+  }
   if (isRejectedWithValue(action)) {
     // Mỗi khi thực hiện query hoặc mutation mà bị lỗi thì nó sẽ chạy vào đây
     // Những lỗi từ server thì action nó mới có rejectedWithValue = true
@@ -27,9 +33,6 @@ export const rtkQueryErrorLogger: Middleware = (api: MiddlewareAPI) => (next) =>
     if (isPayloadErrorMessage(action.payload)) {
       // lỗi reject từ server chỉ có message thôi
       toast.warn(action.payload.data.error)
-    } else if (!isEntityError(action.payload)) {
-      // lỗi còn lại trừ lỗi 422 có thể từ serialize Error
-      toast.warn(action.error.message)
     }
   }
   return next(action)
