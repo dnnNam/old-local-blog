@@ -47,6 +47,7 @@ export const blogApi = createApi({
   reducerPath: 'blogApi', //tên filed trong redux state
   tagTypes: ['Posts'], // những kiểu tag cho phép dùng trong blog Api
   // kiểu quản lí ép thằng nào gọi api lại hay không
+  keepUnusedDataFor: 10,
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:4000/' }),
   endpoints: (build) => ({
     // Generic type theo thứ tự kiểu response trả về argument
