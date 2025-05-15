@@ -48,7 +48,13 @@ export const blogApi = createApi({
   tagTypes: ['Posts'], // những kiểu tag cho phép dùng trong blog Api
   // kiểu quản lí ép thằng nào gọi api lại hay không
   keepUnusedDataFor: 10,
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:4000/' }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://localhost:4000/',
+    prepareHeaders(headers) {
+      headers.set('authorization', 'Bearer ABCXYZ')
+      return headers
+    }
+  }),
   endpoints: (build) => ({
     // Generic type theo thứ tự kiểu response trả về argument
     getPosts: build.query<Post[], void>({
@@ -105,7 +111,16 @@ export const blogApi = createApi({
       invalidatesTags: (result, error, body) => (error ? [] : [{ type: 'Posts', id: 'LIST' }])
     }),
     getPost: build.query<Post, string>({
-      query: (id) => `posts/${id}`
+      query: (id) => ({
+        url: `posts/${id}?first_name=du&lastname=duoc`,
+        headers: {
+          hello: 'im nam'
+        },
+        params: {
+          first_name: 'du',
+          'last-name': 'duoc'
+        }
+      })
     }),
     updatePost: build.mutation<Post, { id: string; body: Post }>({
       query(data) {
