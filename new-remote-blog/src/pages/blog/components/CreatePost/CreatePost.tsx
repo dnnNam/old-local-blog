@@ -32,7 +32,16 @@ export default function CreatePost() {
   const [formData, setFormData] = useState<Omit<Post, 'id'> | Post>(initialState)
   const [addPost, addPostResult] = useAddPostMutation()
   const postId = useSelector((state: RootState) => state.blog.postId)
-  const { data, refetch } = useGetPostQuery(postId, { skip: !postId }) // khi bấm vài edit mới lấy
+  // nếu thay đổi postId thì nó sẽ refetch lại luôn
+  // nếu truyền số vào refetchOnMountOrArgChange thì sau số giây đó thì mới refetch
+  // polling là tính năng giúp chúng ta gọi lại api sau 1 khoảng thời gian nào đó
+  // muốn gọi lại api set 1000 mili giây
+  // khá là hữu ích khi web không tích hợp socketio
+  const { data, refetch } = useGetPostQuery(postId, {
+    skip: !postId,
+    refetchOnMountOrArgChange: 5,
+    pollingInterval: 1000
+  }) // khi bấm vài edit mới lấy
   const [updatePost, updatePostResult] = useUpdatePostMutation()
 
   /**
